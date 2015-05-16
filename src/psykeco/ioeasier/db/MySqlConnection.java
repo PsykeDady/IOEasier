@@ -10,6 +10,10 @@ import java.util.LinkedList;
  * Gestore delle connessioni di mysql, la classe permette di avviare una connessione,
  * scambiare dati con mysql tirando fuori i ResultSet, dire se sei connesso o no,
  * le cause della mancanza di connessione e altro.
+ * 
+ * Per Connettere al database la classe da chiamare tuttavia e' {@link psykeco.ioeasier.db.ConnessioneDB},
+ * prima di instanziare questa classe basta chiamare {@link psykeco.ioeasier.db.ConnessioneDB #createInstance(String...)} e
+ * automaticamente si istanzia la connessione verso il db.
  * @author archdady
  *
  */
@@ -168,7 +172,7 @@ public class MySqlConnection {
 	/**
 	 * Tenta di eliminare il database passato.
 	 * @param nomeDB nome del database da eliminare
-	 * @return true se l'eliminazione � andata a buon fine
+	 * @return true se l'eliminazione e' andata a buon fine
 	 */
 	public boolean dropDB (String nomeDB){
 		
@@ -220,9 +224,12 @@ public class MySqlConnection {
 	 *@return lo stato della richiesta
 	 */
 	public boolean esegui(String comando){
+		if(!connesso) return false;
 		try{
-			return connesso && connessione.createStatement().execute(comando);
+			connessione.createStatement().execute(comando);
+			return true;
 		}catch(SQLException s){
+			s.printStackTrace();
 			return false;
 		}//try-catch
 	}//esegui
