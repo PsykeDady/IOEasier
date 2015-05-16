@@ -28,6 +28,11 @@ public class MySqlConnection {
 	private Connection connessione;
 	
 	/**
+	 * variabile che indica se si vogliono indietro i messaggi di errore 
+	 */
+	private static boolean debug=false;
+	
+	/**
 	 * nome standard dei driver jdbc usati
 	 */
 	public static final String DRIVER="com.mysql.jdbc.Driver";
@@ -73,6 +78,13 @@ public class MySqlConnection {
 		
 	}//start
 	
+	/**
+	 * inserendo true in questo metodo si dichiara di voler indietro
+	 * i messaggi di errore gestiti automaticamente dal programma
+	 * @param debug_on
+	 */
+	public static void setDebugMode(boolean debug_on){debug=debug_on;}
+	
 	private static boolean testConnessione(Connection connessione){
 		MySqlConnection msc= new MySqlConnection(connessione);
 		boolean status=msc.creaDB(TEST_ECHO);
@@ -93,7 +105,7 @@ public class MySqlConnection {
 			Class.forName(DRIVER);
 			connessione=DriverManager.getConnection(URL,credenziali[0],credenziali[1]);
 		}catch(ClassNotFoundException c ){
-			c.printStackTrace();
+			if(debug)c.printStackTrace();
 			throw new DriverMancanti();
 		}catch(SQLException s){
 			s.printStackTrace();
@@ -110,6 +122,13 @@ public class MySqlConnection {
 	 */
 	public boolean statoConnessione(){
 		return connesso;
+	}
+	
+	/**
+	 *  @return lo stato del debug
+	 */
+	public boolean statoDebug(){
+		return debug;
 	}
 
 
@@ -142,6 +161,7 @@ public class MySqlConnection {
 			connessione.createStatement().execute(query);
 			return true;
 		} catch (SQLException e) {
+			if(debug)e.printStackTrace();
 			// richiesta rifiutata TODO
 			return false;
 		}
@@ -163,6 +183,7 @@ public class MySqlConnection {
 			ResultSet rs=connessione.createStatement().executeQuery(query);
 			return rs.next();
 		} catch (SQLException e) {
+			if(debug)e.printStackTrace();
 			return false;
 			// richiesta rifiutata TODO
 		}//try-catch
@@ -184,28 +205,14 @@ public class MySqlConnection {
 			connessione.createStatement().execute(query);
 			return true;
 		}catch(SQLException s){
+			if(debug)s.printStackTrace();
 			return false;
 		}//try-catch
 		
 		
 	}//dropDB
 	
-	/**
-	 * Crea una tabella con i parametri passati 
-	 * 
-	 * in sviluppo
-	 * @param
-	 * @param 
-	 * @param
-	 *
-	 * @return
-	 */
-	public boolean createTable (String nome_db, String nome_tabella, ParametroTabella ... param){
-		
-		
-		return true;
-	}
-	
+
 	/**preleva la connessione per fare query 
 	 * 
 	 * @return la connessione
@@ -229,7 +236,7 @@ public class MySqlConnection {
 			connessione.createStatement().execute(comando);
 			return true;
 		}catch(SQLException s){
-			s.printStackTrace();
+			if(debug)s.printStackTrace();
 			return false;
 		}//try-catch
 	}//esegui
@@ -249,6 +256,7 @@ public class MySqlConnection {
 		try{
 			return  connessione.createStatement().executeQuery(query);
 		}catch(SQLException s){
+			if(debug)s.printStackTrace();
 			return null;
 		}//try-catch
 	}//query
