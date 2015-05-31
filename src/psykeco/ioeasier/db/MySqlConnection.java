@@ -31,52 +31,14 @@ public class MySqlConnection {
 	 * variabile che indica se si vogliono indietro i messaggi di errore 
 	 */
 	private static boolean debug=false;
+
 	
-	/**
-	 * nome standard dei driver jdbc usati
-	 */
-	public static final String DRIVER="com.mysql.jdbc.Driver";
-	
-	/**
-	 * semi-URL standard della connessione con jdbc. Va completato con il nome del database
-	 */
-	public static final String URL="jdbc:mysql://localhost/";
-	
-	/**
-	 * frase di testing che serve a vedere se la connesione con mysql e' valida
-	 */
-	public static String TEST_ECHO="test_PsykeCo_MySql_Connection";
 	
 	public MySqlConnection(){
 		connessione=ConnessioneDB.getConnect();
 		connesso=connessione!=null;
 	}//MySqlConnection()
 	
-	public MySqlConnection(Connection c){
-		connessione=c;
-		connesso=testConnessione(connessione);
-	}
-	
-	/**
-	 * Inizia una connessione se le credenziali inserite sono esatte, altrimenti
-	 * restituisce false. La Connessione iniziata viene conservata nell'istanza
-	 * della classe {@link ConnessioneDB}
-	 * 
-	 * @param c : le credenziali da mettere, nella forma {admin, password}
-	 * @return se le credenziali erano corrette true
-	 */
-	public static boolean start(String [] credenziali){
-		String []c=verificaCredenziali(credenziali);
-		Connection connessione=connect(c);
-		boolean status =testConnessione(connessione);
-		if(status){
-			ConnessioneDB.createInstance(c);
-		}
-		
-		return status;
-		
-		
-	}//start
 	
 	/**
 	 * inserendo true in questo metodo si dichiara di voler indietro
@@ -84,38 +46,7 @@ public class MySqlConnection {
 	 * @param debug_on
 	 */
 	public static void setDebugMode(boolean debug_on){debug=debug_on;}
-	
-	private static boolean testConnessione(Connection connessione){
-		MySqlConnection msc= new MySqlConnection(connessione);
-		boolean status=msc.creaDB(TEST_ECHO);
-		status=status||msc.dropDB(TEST_ECHO);
-		return status;
-	}
-	
-	private static String[] verificaCredenziali(String...c){
-		String[]credenziali=new String[2];
-		credenziali[0]=(c.length<1||c[0]==null||c[0].equals(""))?"root":c[0];
-		credenziali[1]=(c.length<2||c[1]==null)?"":c[1];
-		return credenziali;
-	}
-	
-	public static Connection connect(String ... credenziali){
-		Connection connessione=null;
-		try{
-			Class.forName(DRIVER);
-			connessione=DriverManager.getConnection(URL,credenziali[0],credenziali[1]);
-		}catch(ClassNotFoundException c ){
-			if(debug)c.printStackTrace();
-			throw new DriverMancanti();
-		}catch(SQLException s){
-			s.printStackTrace();
-			throw new RichiestaRifiutata();
-		}
-		return connessione;
-	}
-	
-
-	
+		
 	
 	/**
 	 * @return true se connesso
