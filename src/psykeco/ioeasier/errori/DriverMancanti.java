@@ -7,8 +7,9 @@ public class DriverMancanti extends RuntimeException {
 		super(MESSAGGIO);
 	}
 	public boolean equals(Object o){
-		
-		return true;
+		if(o==null) return false;
+		if(this==o) return true;
+		return o instanceof DriverMancanti;
 	}
 
 }
