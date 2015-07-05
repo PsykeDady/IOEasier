@@ -1,6 +1,7 @@
 package psykeco.ioeasier.io;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.LinkedList;
 
 import psykeco.ioeasier.errori.*;
@@ -183,9 +184,75 @@ public final class FileUtility {
 			
 		return back;
 	}//fileback
+	
+	/**
+	 * nasconde un file in base al sistema operativo in cui si trova
+	 * 
+	 * @return true se il file e' stato nascosto o lo era già,
+	 * 		false se non è stato possibile
+	 */
+	public static boolean hideFile(File f){
+		if(! f.exists()) return false;
+		
+		if(f.isHidden())return true;
+		
+		String nome_file=f.getName();
+		String percorso_file=f.getParentFile().getAbsolutePath();
+		
+		if(selectOS().contains("win")){
+			try{
+				Process p = Runtime.getRuntime().exec("attrib +h " + f.getAbsolutePath());
+				p.waitFor(); 
+			}catch(IOException  ie){
+				ie.printStackTrace();
+			}catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+		}else{
+			//suppongo sia di unix, allora il file viene nascosto rinominandolo
+			
+			//controllo sia gia' nascosto
+			
+			f.renameTo(new File(percorso_file+File.separatorChar+'.'+nome_file));
+		}
+		
+		
+		
+		return true;
+	}
+	
+	/** 
+	 * @param il file originale
+	 * 
+	 * @return il relativo file nascosto
+	 */
+	
+	public static File hiddenFileName(File f){
+		if(f.isHidden())return f;
+		
+		if(selectOS().contains("win"))return f;
+		
+		return new File(f.getParentFile().getAbsolutePath()+
+				File.separatorChar+'.'+f.getName());
+	}
+	
+	/**
+	 * 
+	 * @return il sistema operativo corrente
+	 */
+	public static String selectOS(){
+		String os_name=System.getProperty("os.name").toLowerCase();
+		
+		
+		return os_name;
+	}
+	
+	
 	/**
 	 * questo metodo ritorna la lista dei file presenti nella cartella dir, o
 	 * nel caso in cui non sia una cartella ritorna null
+	 * preleva i file nascosti
 	 * @param dir: la cartella da leggere
 	 * @return array di nomi di file in dir o null se dir non e' una cartella
 	 */
@@ -194,12 +261,45 @@ public final class FileUtility {
 		File[] files=dir.listFiles();
 		String [] filesname= new String[files.length];
 		for (int i=0; i<files.length;i++){
-			filesname[i]=files[i].getName();
+			String nome_file=files[i].getName();
+			
+			filesname[i]=nome_file;
 		}
 		return filesname;
 	}//listFile
 	
+	/**
+	 * questo metodo ritorna la lista dei file presenti nella cartella dir, o
+	 * nel caso in cui non sia una cartella ritorna null
+	 * preleva i file nascosti
+	 * @param dir: la cartella da leggere
+	 * @return array di nomi di file in dir o null se dir non e' una cartella
+	 */
+	public static String[] listVisibleFile(File dir){
+		String[] files=listFile(dir);
+		
+		if(files==null)return files;
+		
+		LinkedList<String> list=new LinkedList<String>();
+		
+		for(int i=0; i<files.length;i++){
+			if(files[i].charAt(0)=='.'){
+				continue;
+			}
+			list.add(files[i]);
+		}
+		
+		return list.toArray(new String[list.size()]);
+		
+	}//listVisibleFile
 	
+	public static void main (String[]args){
+		File f=new File("/home/psykedady/Documenti/cosenascoste/ciao.txt");
+		hideFile(f);
+	//String[]list=listVisibleFile(f.getAbsoluteFile());
+		System.out.println(f.exists());
+		
+	}
 	
 }//FileUtility
 
