@@ -293,6 +293,32 @@ public final class FileUtility {
 		
 	}//listVisibleFile
 	
+	public static void textFileWriter(String path,LinkedList<String> contenuto,String separators){
+		File nuovo= new File(path);
+		
+
+		try {
+			if(!nuovo.exists()) nuovo.createNewFile();
+			PrintWriter dataoutput=new PrintWriter(nuovo);
+			int index=0;
+			for(String parola:contenuto ){
+				
+				dataoutput.print(parola);
+				
+				if(index<contenuto.size()-1){
+					dataoutput.print(separators);
+				}
+				
+			}
+			dataoutput.close();
+		} catch (FileNotFoundException e) {
+			throw new FileNonTrovato(nuovo.getAbsolutePath());
+		} catch (IOException e) {
+			throw new EccezioneScrittura(nuovo.getAbsolutePath());
+		}
+		
+	}
+	
 	public static void main (String[]args){
 		File f=new File("/home/psykedady/Documenti/cosenascoste/ciao.txt");
 		hideFile(f);
@@ -300,6 +326,8 @@ public final class FileUtility {
 		System.out.println(f.exists());
 		
 	}
+	
+	
 	
 }//FileUtility
 
