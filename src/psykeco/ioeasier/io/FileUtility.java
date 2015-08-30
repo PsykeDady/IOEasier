@@ -145,9 +145,11 @@ public final class FileUtility {
 		try {
 			if(!nuovo.exists()) nuovo.createNewFile();
 			DataOutputStream dataoutput= new DataOutputStream(new FileOutputStream(nuovo));
+			int i=0;
 			for(String parola:contenuto ){
-				
-				dataoutput.writeChars(parola+separators);
+				dataoutput.writeChars(parola);
+				i++;
+				if(i<=contenuto.size())dataoutput.writeChars(separators);
 			}
 			dataoutput.close();
 		} catch (FileNotFoundException e) {
@@ -199,6 +201,20 @@ public final class FileUtility {
 		return filesname;
 	}//listFile
 	
+	
+	public static boolean creaFileEParenti(File f){
+		
+		if(f.exists()) return true;
+		
+		else {
+			f.getParentFile().mkdirs();
+			try {
+				return f.createNewFile();
+			} catch (IOException e) {
+				throw new ErrorePermessiFile();
+			}
+		}//lese
+	}//creaFileEParenti
 	
 	
 }//FileUtility

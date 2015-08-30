@@ -71,7 +71,7 @@ public class ConnessioneDB {
 	private static boolean testConnessione(){
 		MySqlConnection msc= new MySqlConnection();
 		boolean status=msc.creaDB(TEST_ECHO);
-		status=status||msc.dropDB(TEST_ECHO);
+		status=msc.dropDB(TEST_ECHO)||status;
 		return status;
 	}
 	
