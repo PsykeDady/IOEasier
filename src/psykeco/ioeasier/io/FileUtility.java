@@ -190,16 +190,24 @@ public final class FileUtility {
 	/**
 	 * nasconde un file in base al sistema operativo in cui si trova
 	 * 
-	 * @return true se il file e' stato nascosto o lo era già,
-	 * 		false se non è stato possibile
+	 * @return true se il file e' stato nascosto o lo era gia�,
+	 * 		false se non e stato possibile
 	 */
 	public static boolean hideFile(File f){
+		if(f==null){
+			System.err.println("File nullo!!");
+			
+			return false;
+		}
+		
 		if(! f.exists()) return false;
 		
 		if(f.isHidden())return true;
 		
 		String nome_file=f.getName();
-		String percorso_file=f.getParentFile().getAbsolutePath();
+		File parent= f.getParentFile();
+		
+		String percorso_file=(parent==null)?"":parent.getAbsolutePath();
 		
 		if(selectOS().contains("win")){
 			try{
