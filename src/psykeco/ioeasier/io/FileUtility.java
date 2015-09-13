@@ -8,6 +8,14 @@ import psykeco.ioeasier.errori.*;
 
 
 public final class FileUtility {
+	
+	public enum SistemaOperativo{
+		WINDOWS,
+		LINUX,
+		MAC,
+		UNIX_GENERICO,
+		OTHER
+	}
 
 	private FileUtility() {
 		// non instanziabile
@@ -38,9 +46,18 @@ public final class FileUtility {
 	 * @throws EccezioneScrittura. possibile errore di accesso
 	 */
 	public static String[] fileSplitter(File read ,char separator, int length) {
+		if(read==null||! read.exists()) return null;
+		
+		boolean hide_in_windows=nascostoInWindows(read);
+		
+		if(hide_in_windows) showFileInWindows(read);
+		
 		String linea="";
 		if(length<0)return null;
 		String[] scomposto=new String[length];
+		
+		
+		
 		try{
 			DataInputStream datainput= new DataInputStream(new FileInputStream(read));
 			//inizio il salvataggio
@@ -75,6 +92,9 @@ public final class FileUtility {
 		catch (IOException ecc) {
 			throw new EccezioneScrittura(read.getAbsolutePath());
 		}//try-catch
+		
+		if(hide_in_windows) hideFileInWindows(read);
+		
 		return scomposto;
 	}//fileSplitter
 	
@@ -95,6 +115,10 @@ public final class FileUtility {
 	public static LinkedList<String> fileUnlimSplitter(File read ,char separator) {
 		String linea="";
 		LinkedList<String> scomposto=new LinkedList<String>();
+		
+		boolean hide_in_windows=nascostoInWindows(read);
+		
+		if(hide_in_windows) showFileInWindows(read);
 		try{
 			DataInputStream datainput= new DataInputStream(new FileInputStream(read));
 			//inizio il salvataggio
@@ -127,6 +151,9 @@ public final class FileUtility {
 		catch (IOException ecc) {
 			throw new EccezioneScrittura(read.getAbsolutePath());
 		}//try-catch
+		
+		if(hide_in_windows) hideFileInWindows(read);
+		
 		return scomposto;
 	}//fileSplitter
 	
@@ -142,7 +169,10 @@ public final class FileUtility {
 		
 		File nuovo= new File(path);
 		
-
+		boolean hide_in_windows=nascostoInWindows(nuovo);
+		
+		if(hide_in_windows) showFileInWindows(nuovo);
+		
 		try {
 			if(!nuovo.exists()) nuovo.createNewFile();
 			DataOutputStream dataoutput= new DataOutputStream(new FileOutputStream(nuovo));
@@ -159,6 +189,7 @@ public final class FileUtility {
 			throw new EccezioneScrittura(nuovo.getAbsolutePath());
 		}
 		
+		if(hide_in_windows) hideFileInWindows(nuovo);
 		
 	}//fileWriter
 	
@@ -204,33 +235,53 @@ public final class FileUtility {
 		
 		if(f.isHidden())return true;
 		
-		String nome_file=f.getName();
-		File parent= f.getParentFile();
 		
-		String percorso_file=(parent==null)?"":parent.getAbsolutePath();
 		
 		if(selectOS().contains("win")){
-			try{
-				Process p = Runtime.getRuntime().exec("attrib +h " + f.getAbsolutePath());
-				p.waitFor(); 
-			}catch(IOException  ie){
-				ie.printStackTrace();
-			}catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			hideFileInWindows(f);
 			
 		}else{
 			//suppongo sia di unix, allora il file viene nascosto rinominandolo
 			
 			//controllo sia gia' nascosto
 			
-			f.renameTo(new File(percorso_file+File.separatorChar+'.'+nome_file));
+			f.renameTo(hiddenFileName(f));
 		}
 		
 		
 		
 		return true;
+	}//hideFile(File)
+	
+	/**
+	 * mostra (nel senso contrario di rendere nascosto) un file nel file system corrente
+	 * @return true se ha apportato cambiamenti
+	 */
+	public static boolean showFile(File f){
+		if(f==null){
+			System.err.println("File nullo!!");
+			
+			return false;
+		}
+		
+		if(! f.exists()) return false;
+		
+		if(! f.isHidden())return true;
+		
+		if(selectOS().contains("win")){
+			showFileInWindows(f);
+			
+		}else{
+			//suppongo sia di unix, allora il file viene nascosto rinominandolo
+			
+			//controllo sia gia' nascosto
+			
+			return f.renameTo(showFileName(f));
+		}
+		
+		return !f.isHidden();
 	}
+	
 	
 	/** 
 	 * @param il file originale
@@ -247,9 +298,39 @@ public final class FileUtility {
 				File.separatorChar+'.'+f.getName());
 	}
 	
-	/**
+	/**	 * 
+	 * @param file nascosto
 	 * 
-	 * @return il sistema operativo corrente
+	 * @return ritorna il nome del file "scoperto" (nel senso contrario a nascosto)
+	 */
+	/** 
+	 * @param il file originale
+	 * 
+	 * @return il relativo file nascosto
+	 */
+	
+	public static File showFileName(File f){
+		if(!f.isHidden())return f;
+		
+		if(selectOS().contains("win"))return f;
+		
+		String nome=f.getName();
+		
+		for(int i=0; i<nome.length();i++){
+			char latano=nome.charAt(i);
+			if(latano!='.'){
+				nome=nome.substring(i);
+				break;
+			}
+		}
+		
+		
+		return new File(f.getParentFile().getAbsolutePath()+
+				File.separatorChar+nome);
+	}
+	
+	/**
+	 * @return il sistema operativo corrente in string 
 	 */
 	public static String selectOS(){
 		String os_name=System.getProperty("os.name").toLowerCase();
@@ -305,8 +386,10 @@ public final class FileUtility {
 	
 	public static void textFileWriter(String path,LinkedList<String> contenuto,String separators){
 		File nuovo= new File(path);
+		boolean hide_in_win=nascostoInWindows(nuovo);
 		
-
+		if(hide_in_win) showFileInWindows(nuovo);
+		
 		try {
 			if(!nuovo.exists()) nuovo.createNewFile();
 			PrintWriter dataoutput=new PrintWriter(nuovo);
@@ -327,13 +410,7 @@ public final class FileUtility {
 			throw new EccezioneScrittura(nuovo.getAbsolutePath());
 		}
 		
-	}
-	
-	public static void main (String[]args){
-		File f=new File("/home/psykedady/Documenti/cosenascoste/ciao.txt");
-		hideFile(f);
-	//String[]list=listVisibleFile(f.getAbsoluteFile());
-		System.out.println(f.exists());
+		if(hide_in_win) hideFileInWindows(nuovo);
 		
 	}
 	
@@ -352,6 +429,55 @@ public final class FileUtility {
 		}//lese
 	}//creaFileEParenti
 	
+	
+	/** 
+	 * @return notifica se il file è nascosto sotto il sistema operativo windows, 
+	 * 			questo stato può generare errori di scrittura quindi è bene controllarlo
+	 */
+	public static boolean nascostoInWindows(File f){ return selectOS().contains("win")&&f.isHidden();}
+	
+	/**
+	 * questo metodo nasconde un file sotto sistema operativo windows
+	 */
+	private static void hideFileInWindows(File f){
+		if(
+				f==null
+				||!f.exists()
+				||f.isHidden()
+				||! selectOS().contains("win") 
+		) return;
+		
+		try{
+			Process p = Runtime.getRuntime().exec("attrib +h " + f.getAbsolutePath());
+			p.waitFor(); 
+		}catch(IOException  ie){
+			ie.printStackTrace();
+		}catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}//hideFileInWindows
+	
+	/**
+	 * questo metodo mostra (inteso come contrario di nasconde) un file in Windows
+	 */
+	
+	private static void showFileInWindows(File f){
+		if(
+				f==null
+				||!f.exists()
+				||!f.isHidden()
+				||!selectOS().contains("win") 
+		) return;
+		
+		try{
+			Process p = Runtime.getRuntime().exec("attrib -h " + f.getAbsolutePath());
+			p.waitFor(); 
+		}catch(IOException  ie){
+			ie.printStackTrace();
+		}catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}//hideFileInWindows
 	
 }//FileUtility
 
