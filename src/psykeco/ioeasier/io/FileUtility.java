@@ -178,6 +178,7 @@ public final class FileUtility {
 			DataOutputStream dataoutput= new DataOutputStream(new FileOutputStream(nuovo));
 			int i=0;
 			for(String parola:contenuto ){
+				if(parola==null||parola.equals(""))continue;
 				dataoutput.writeChars(parola);
 				i++;
 				if(i<=contenuto.size())dataoutput.writeChars(separators);
@@ -221,7 +222,7 @@ public final class FileUtility {
 	/**
 	 * nasconde un file in base al sistema operativo in cui si trova
 	 * 
-	 * @return true se il file e' stato nascosto o lo era gia ,
+	 * @return true se il file e' stato nascosto o lo era giaï¿½,
 	 * 		false se non e stato possibile
 	 */
 	public static boolean hideFile(File f){
@@ -431,8 +432,8 @@ public final class FileUtility {
 	
 	
 	/** 
-	 * @return notifica se il file è nascosto sotto il sistema operativo windows, 
-	 * 			questo stato può generare errori di scrittura quindi è bene controllarlo
+	 * @return notifica se il file ï¿½ nascosto sotto il sistema operativo windows, 
+	 * 			questo stato puï¿½ generare errori di scrittura quindi ï¿½ bene controllarlo
 	 */
 	public static boolean nascostoInWindows(File f){ return selectOS().contains("win")&&f.isHidden();}
 	
