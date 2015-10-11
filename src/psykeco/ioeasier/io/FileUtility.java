@@ -299,6 +299,49 @@ public final class FileUtility {
 				File.separatorChar+'.'+f.getName());
 	}
 	
+	
+	
+	/**
+	 * rimuove il file o la directory f, possono essere  specificati dei parametri <pre>
+	 * 
+	 * 		-r per rimuovere ricorsivamente se f è una directory
+	 * 
+	 * </pre>
+	 * @param f : file o directory 
+	 * @param args : argomenti aggiuntivi
+	 * @return true se il file è stato eliminato correttamente
+	 */
+	public static boolean deleteFile(File f, String args){
+		
+		if(f==null) return false;
+		if(args==null)args="";
+		
+		boolean recursive=args.equalsIgnoreCase("r");
+		
+		return (recursive)?deleteFileR(f):f.delete();
+		
+	}
+	/**
+	 * elimina ricorsivamente la cartella f e tutto il contenuto. Se f non 
+	 * è una directory lo elimina ed esce
+	 * @param f: file o directory
+	 * @return true se f è eliminato
+	 */
+	private static boolean deleteFileR(File f){
+		if(!f.exists()) {
+			return false;
+		}if(!f.isDirectory()){
+			return f.delete();
+		}
+		File[] files=f.listFiles();
+		boolean result=true;
+		for(File x:files){
+			result = deleteFileR(x) & result ;
+		}
+		f.delete();
+		return result;
+	}//deleteFileR
+	
 	/**	 * 
 	 * @param file nascosto
 	 * 
