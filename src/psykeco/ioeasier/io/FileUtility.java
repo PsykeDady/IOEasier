@@ -222,7 +222,7 @@ public final class FileUtility {
 	/**
 	 * nasconde un file in base al sistema operativo in cui si trova
 	 * 
-	 * @return true se il file e' stato nascosto o lo era gia�,
+	 * @return true se il file e' stato nascosto o lo era gia,
 	 * 		false se non e stato possibile
 	 */
 	public static boolean hideFile(File f){
@@ -273,9 +273,8 @@ public final class FileUtility {
 			showFileInWindows(f);
 			
 		}else{
-			//suppongo sia di unix, allora il file viene nascosto rinominandolo
+			//suppongo sia di unix, allora il file viene scoperto rinominandolo
 			
-			//controllo sia gia' nascosto
 			
 			return f.renameTo(showFileName(f));
 		}
