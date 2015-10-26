@@ -1,10 +1,13 @@
 package psykeco.ioeasier.io;
 
 import java.io.*;
+import java.net.URISyntaxException;
+import java.security.CodeSource;
 import java.util.Arrays;
 import java.util.LinkedList;
 
 import psykeco.ioeasier.errori.*;
+
 
 
 public final class FileUtility {
@@ -521,6 +524,31 @@ public final class FileUtility {
 			e.printStackTrace();
 		}
 	}//hideFileInWindows
+	
+	/**
+	 * corregge il path assoluto di un file quando si esegue tramite un jar da doppio click.
+	 * Spesso viene usato come path assoluto la home del sistema in questo caso (la cartella utente)
+	 * 
+	 * @param rel_path : il path relativo, da cui deve partire il file subito dopo la cartella del jar
+	 * @param c : la classe che si trova nella cartella a cui arrivare
+	 * 
+	 * @return una stringa rappresentante il path assoluto o una stringa vuota
+	 */
+	
+	public static String absolutePathOf(String rel_path,Class c){
+		if(rel_path==null)return "";
+		
+		CodeSource code_source = c.getProtectionDomain().getCodeSource();
+		File file=null;
+		try {
+			file = new File(code_source.getLocation().toURI().getPath());
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			return "";
+		}
+		String dir = file.getParentFile().getPath();
+		return dir+File.separatorChar+rel_path;
+	}
 	
 }//FileUtility
 
