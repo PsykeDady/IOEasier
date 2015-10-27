@@ -538,16 +538,33 @@ public final class FileUtility {
 	public static String absolutePathOf(String rel_path,Class c){
 		if(rel_path==null)return "";
 		
-		CodeSource code_source = c.getProtectionDomain().getCodeSource();
-		File file=null;
-		try {
-			file = new File(code_source.getLocation().toURI().getPath());
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-			return "";
-		}
+		File file=getExecJar(c);
+		if(file==null)return "";
 		String dir = file.getParentFile().getPath();
 		return dir+File.separatorChar+rel_path;
+	}
+	/**
+	 * 
+	 * @param c : una qualunque classe interna al jar che si vuole prelevare
+	 * @return un file rappresentante il jar di esecuzione, null se ci sono errori
+	 */
+	public static File getExecJar(Class c){
+		File x=null;
+		try{x=new File(c.getProtectionDomain().getCodeSource().
+				getLocation().toURI().getPath());}
+		catch(URISyntaxException e){}
+		return x;
+	}
+	
+	/**
+	 * @param c : una qualunque classe interna al jar di cui si vuole il nome
+	 * @return preleva il nome del jar in esecuzione o una stringa vuota altrimenti
+	 */
+	public static String getJarName(Class c){
+		
+		File x =getExecJar(c);
+		
+		return (x==null)?"":x.getName();
 	}
 	
 }//FileUtility
