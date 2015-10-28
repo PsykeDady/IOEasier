@@ -477,8 +477,8 @@ public final class FileUtility {
 	
 	
 	/** 
-	 * @return notifica se il file � nascosto sotto il sistema operativo windows, 
-	 * 			questo stato pu� generare errori di scrittura quindi � bene controllarlo
+	 * @return notifica se il file e nascosto sotto il sistema operativo windows, 
+	 * 			questo stato puo generare errori di scrittura quindi e bene controllarlo
 	 */
 	public static boolean nascostoInWindows(File f){ return selectOS().contains("win")&&f.isHidden();}
 	
