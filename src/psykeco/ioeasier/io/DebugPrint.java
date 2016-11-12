@@ -8,8 +8,8 @@ public class DebugPrint {
 	private boolean close=false;
 	private PrintStream out;
 	
-	public DebugPrint(boolean flag){
-		this(System.out,flag);
+	public DebugPrint(boolean debug_mode){
+		this(System.out,debug_mode);
 	}
 	
 	public DebugPrint(PrintStream out,boolean debug_mode){
