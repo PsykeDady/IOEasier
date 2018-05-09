@@ -83,7 +83,7 @@ public class ConnessioneDB {
 		}catch(ClassNotFoundException c ){
 			throw new DriverMancanti();
 		}catch(SQLException s){
-			throw new RichiestaRifiutata();
+			throw new RichiestaRifiutata(s.getMessage());
 		}
 		return connessione;
 	}
