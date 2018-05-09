@@ -21,7 +21,7 @@ public class ConnessioneDB {
 	/**
 	 * nome standard dei driver jdbc usati
 	 */
-	public static final String DRIVER="com.mysql.jdbc.Driver";
+	public static final String DRIVER="com.mysql.cj.jdbc.Driver";
 	
 	/**
 	 * semi-URL standard della connessione con jdbc. Va completato con il nome del database
