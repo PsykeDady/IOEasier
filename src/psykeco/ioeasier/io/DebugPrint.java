@@ -4,15 +4,16 @@ import java.io.PrintStream;
 
 public class DebugPrint {
 	
-	public static boolean debug_mode=false;
+	public static boolean global_mode=false;
+	public boolean debug_mode=false;
 	private boolean close=false;
 	private PrintStream out;
 	
-	public DebugPrint(boolean debug_mode){
-		this(System.out,debug_mode);
+	public DebugPrint(){
+		this(System.out);
 	}
 	
-	public DebugPrint(PrintStream out,boolean debug_mode){
+	public DebugPrint(PrintStream out){
 		
 		this.out=out;
 		this.debug_mode=debug_mode;
@@ -158,5 +159,6 @@ public class DebugPrint {
 				out.printf(format, args):
 					null;
 	}
+	
 	
 }
