@@ -1,7 +1,24 @@
 package psykeco.ioeasier.io;
 
+import java.io.IOException;
 import java.io.PrintStream;
 
+/**
+ * Debug Print definisce un tool basilare per generare scritte output per il debug.<br>
+i flag global_mode e debug_mode si possono abilitare/disattivare globalmente e localmente gli output generati.<br>
+
+esistono tre costruttori per DebugPrint:<br>
+<table>
+	<tr> <td>-<b>default</b></td> <td>usa lo standard error come output di stampa-debug</td> </tr>
+	<tr> <td>-<b>String</b></td> <td>con la stringa passata costruisce un file e lo usa come output di stampa-debug</td> </tr>
+	<tr> <td>-<b>PrintStream</b></td> <td>usa il PrintStream passato come output di stampa-debug*</td> </tr>
+</table>
+<br>
+Note:
+<pre>*=non conviene usare questo costruttore inizializzando direttamente all'interno lo stream, a causa dell'eccezione IO da catturare</pre>
+ * @author PsykeDady
+ *
+ */
 public class DebugPrint {
 	
 	public static boolean global_mode=false;
@@ -10,14 +27,25 @@ public class DebugPrint {
 	private PrintStream out;
 	
 	public DebugPrint(){
-		this(System.out);
+		constructor(System.out);
 	}
 	
 	public DebugPrint(PrintStream out){
-		
+		constructor(out);
+	}
+	
+	public DebugPrint(String s) {
+		try {
+			PrintStream ps=new PrintStream(s);
+			constructor(ps);
+		}catch(IOException io) {
+			System.err.println("non e' stato possibile attivare la modalità debug!");
+			System.exit(-1);
+		}
+	}
+	
+	private void constructor(PrintStream out) {
 		this.out=out;
-		this.debug_mode=debug_mode;
-
 	}
 	
 	public void flush() {
@@ -38,124 +66,128 @@ public class DebugPrint {
 			close=true;
 		}
 	}
+	
+	private boolean canPrint() {
+		return debug_mode&&global_mode;
+	}
 
 	
 	public void print (boolean arg){
-		if(debug_mode){
+		if(canPrint()){
 			out.print(arg);
 		}
 	}
 	
 	public void print (char arg){
-		if(debug_mode){
+		if(canPrint()){
 			out.print(arg);
 		}
 	}
 	
 	public void print (int arg){
-		if(debug_mode){
+		if(canPrint()){
 			out.print(arg);
 		}
 	}
 	
 	public void print (long arg){
-		if(debug_mode){
+		if(canPrint()){
 			out.print(arg);
 		}
 	}
 	
 	public void print (float arg){
-		if(debug_mode){
+		if(canPrint()){
 			out.print(arg);
 		}
 	}
 	
 	public void print (double arg){
-		if(debug_mode){
+		if(canPrint()){
 			out.print(arg);
 		}
 	}
 	
 	public void print (char[] arg){
-		if(debug_mode){
+		if(canPrint()){
 			out.print(arg);
 		}
 	}
 	
 	public void print (String arg){
-		if(debug_mode){
+		if(canPrint()){
 			out.print(arg);
 		}
 	}
 	
 	public void print (Object arg){
-		if(debug_mode){
+		if(canPrint()){
 			out.print(arg);
 		}
 	}
 	
 	public void println(){
-		if (debug_mode){
+		if (canPrint()){
 			out.println();
 		}
 	}
 	
 	public void println(boolean arg){
-		if (debug_mode){
+		if (canPrint()){
 			out.println(arg);
 		}
 	}
 	
 	public void println(char arg){
-		if (debug_mode){
+		if (canPrint()){
 			out.println(arg);
 		}
 	}
 	
 	public void println(int arg){
-		if (debug_mode){
+		if (canPrint()){
 			out.println(arg);
 		}
 	}
 	
 	public void println(long arg){
-		if (debug_mode){
+		if (canPrint()){
 			out.println(arg);
 		}
 	}
 	
 	public void println(float arg){
-		if (debug_mode){
+		if (canPrint()){
 			out.println(arg);
 		}
 	}
 	
 	public void println(double arg){
-		if (debug_mode){
+		if (canPrint()){
 			out.println(arg);
 		}
 	}
 	
 	public void println(char[] arg){
-		if (debug_mode){
+		if (canPrint()){
 			out.println(arg);
 		}
 	}
 	
 	public void println(String arg){
-		if (debug_mode){
+		if (canPrint()){
 			out.println(arg);
 		}
 	}
 	
 	public void println(Object arg){
-		if (debug_mode){
+		if (canPrint()){
 			out.println(arg);
 		}
 	}
 	
 	public PrintStream printf(String format, Object ... args){
-		return (debug_mode)? 
+		return (canPrint())? 
 				out.printf(format, args):
 					null;
 	}
