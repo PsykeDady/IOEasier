@@ -62,7 +62,6 @@ public class ConnessioneDB {
 			try {
 				c.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		c=null;
