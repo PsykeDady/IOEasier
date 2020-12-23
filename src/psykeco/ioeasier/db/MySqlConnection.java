@@ -1,10 +1,12 @@
 package psykeco.ioeasier.db;
 
 
-import psykeco.ioeasier.errori.*;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.LinkedList;
+
+
 
 /**
  * Gestore delle connessioni di mysql, la classe permette di avviare una connessione,
@@ -106,7 +108,7 @@ public class MySqlConnection {
 	 */
 	public boolean existDB(String nomeDB){
 		
-		if(!connesso) throw new RichiestaRifiutata() ;
+		if(!connesso) throw new IllegalArgumentException() ;
 		
 		String query="select schema_name from information_schema.schemata where schema_name='"+nomeDB+'\'';
 		
@@ -211,8 +213,8 @@ public class MySqlConnection {
 		
 		}catch(SQLException s){
 			//return null;
-			System.out.println(s);
-			throw new RichiestaRifiutata();
+			s.printStackTrace();
+			throw new IllegalStateException("Errore di connessione");
 		}//catch
 		return ret;
 		

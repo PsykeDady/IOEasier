@@ -1,9 +1,8 @@
 package psykeco.ioeasier.db;
 
-import java.sql.*;
-
-import psykeco.ioeasier.errori.DriverMancanti;
-import psykeco.ioeasier.errori.RichiestaRifiutata;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
  * classe di utilita', statica. Serve a creare una connessione con il Database attraverso il solo richiamo
@@ -80,9 +79,9 @@ public class ConnessioneDB {
 			Class.forName(DRIVER);
 			connessione=DriverManager.getConnection(URL,credenziali[0],credenziali[1]);
 		}catch(ClassNotFoundException c ){
-			throw new DriverMancanti();
+			throw new IllegalStateException("Driver Mancanti");
 		}catch(SQLException s){
-			throw new RichiestaRifiutata(s.getMessage());
+			throw new IllegalStateException();
 		}
 		return connessione;
 	}

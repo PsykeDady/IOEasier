@@ -1,18 +1,25 @@
 package psykeco.ioeasier.io;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URISyntaxException;
-import java.security.CodeSource;
-import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
-import psykeco.ioeasier.errori.*;
+
 
 
 
 public final class FileUtility {
 	
-	public enum SistemaOperativo{
+	public static enum SistemaOperativo{
 		WINDOWS,
 		LINUX,
 		MAC,
@@ -85,7 +92,7 @@ public final class FileUtility {
 			//finita la lettura, chiudo il file
 			datainput.close();
 		} catch (FileNotFoundException e) {
-			throw new FileNonTrovato(read.getAbsolutePath());
+			throw new IllegalArgumentException("File non trovato "+read.getAbsolutePath());
 		} catch (IndexOutOfBoundsException i){
 			throw new IndexOutOfBoundsException("Il parametro length non e' giusto\n"
 					+ "Il vettore deve essere creato + grande!");
@@ -93,7 +100,7 @@ public final class FileUtility {
 			throw new IllegalArgumentException("Il file non conteneva le informazioni aspettate");
 		}
 		catch (IOException ecc) {
-			throw new EccezioneScrittura(read.getAbsolutePath());
+			throw new IllegalStateException("Problemi in scrittura");
 		}//try-catch
 		
 		if(hide_in_windows) hideFileInWindows(read);
@@ -115,9 +122,9 @@ public final class FileUtility {
 	 * @param separator cio' che delimita una Stringa
 	 * @return La lista di Stringhe divise
 	 */
-	public static LinkedList<String> fileUnlimSplitter(File read ,char separator) {
+	public static List<String> fileUnlimSplitter(File read ,char separator) {
 		String linea="";
-		LinkedList<String> scomposto=new LinkedList<String>();
+		List<String> scomposto=new LinkedList<String>();
 		
 		boolean hide_in_windows=nascostoInWindows(read);
 		
@@ -144,7 +151,7 @@ public final class FileUtility {
 			//finita la lettura, chiudo il file
 			datainput.close();
 		} catch (FileNotFoundException e) {
-			throw new FileNonTrovato(read.getAbsolutePath());
+			throw new IllegalArgumentException("File non trovato:"+read.getAbsolutePath());
 		} catch (IndexOutOfBoundsException i){
 			throw new IndexOutOfBoundsException("Il parametro length non e' giusto\n"
 					+ "Il vettore deve essere creato + grande!");
@@ -152,7 +159,7 @@ public final class FileUtility {
 			return scomposto;
 		}
 		catch (IOException ecc) {
-			throw new EccezioneScrittura(read.getAbsolutePath());
+			throw new IllegalStateException("Problemi in scrittura");
 		}//try-catch
 		
 		if(hide_in_windows) hideFileInWindows(read);
@@ -168,7 +175,7 @@ public final class FileUtility {
 	 * @param contenuto una lista che ha per ogni elemento una Stringa da inserire nel file
 	 * @param separators una stringa separatore
 	 */
-	public static void fileWriter(String path,LinkedList<String> contenuto, String separators){
+	public static void fileWriter(String path,List<String> contenuto, String separators){
 		
 		File nuovo= new File(path);
 		
@@ -188,9 +195,9 @@ public final class FileUtility {
 			}
 			dataoutput.close();
 		} catch (FileNotFoundException e) {
-			throw new FileNonTrovato(nuovo.getAbsolutePath());
+			throw new IllegalArgumentException("File non trovato:"+nuovo.getAbsolutePath());
 		} catch (IOException e) {
-			throw new EccezioneScrittura(nuovo.getAbsolutePath());
+			throw new IllegalStateException("Problemi in scrittura");
 		}
 		
 		if(hide_in_windows) hideFileInWindows(nuovo);
@@ -199,7 +206,7 @@ public final class FileUtility {
 	
 	public static File fileBack(String suffisso,File contenuto){
 		
-		if(!contenuto.exists())throw new FileNonTrovato(contenuto.getAbsolutePath());
+		if(!contenuto.exists())throw new IllegalArgumentException("File non trovato "+contenuto.getAbsolutePath());
 		if(suffisso.trim().length()==0)suffisso=".back";
 		File back=new File(contenuto.getAbsoluteFile()+suffisso);
 		
@@ -214,9 +221,9 @@ public final class FileUtility {
 				dataoutput.close();
 				datainput.close();
 			} catch (FileNotFoundException e) {
-				throw new FileNonTrovato(back.getAbsolutePath()+" o "+contenuto.getAbsolutePath());
+				throw new IllegalArgumentException("File non trovato "+back.getAbsolutePath()+" o "+contenuto.getAbsolutePath());
 			} catch (IOException e) {
-				throw new ErrorePermessiFile(back.getAbsoluteFile()+" o "+contenuto.getAbsolutePath());
+				throw new IllegalStateException("Problemi in scrittura con "+back.getAbsoluteFile()+" o di lettura con"+contenuto.getAbsolutePath());
 			}
 			
 		return back;
@@ -417,7 +424,7 @@ public final class FileUtility {
 		
 		if(files==null)return files;
 		
-		LinkedList<String> list=new LinkedList<String>();
+		List<String> list=new LinkedList<String>();
 		
 		for(int i=0; i<files.length;i++){
 			if(files[i].charAt(0)=='.'){
@@ -430,7 +437,7 @@ public final class FileUtility {
 		
 	}//listVisibleFile
 	
-	public static void textFileWriter(String path,LinkedList<String> contenuto,String separators){
+	public static void textFileWriter(String path,List<String> contenuto,String separators){
 		File nuovo= new File(path);
 		boolean hide_in_win=nascostoInWindows(nuovo);
 		
@@ -451,9 +458,9 @@ public final class FileUtility {
 			}
 			dataoutput.close();
 		} catch (FileNotFoundException e) {
-			throw new FileNonTrovato(nuovo.getAbsolutePath());
+			throw new IllegalArgumentException("File non trovato "+nuovo.getAbsolutePath());
 		} catch (IOException e) {
-			throw new EccezioneScrittura(nuovo.getAbsolutePath());
+			throw new IllegalStateException("errore in scrittura o lettura con:"+nuovo.getAbsolutePath());
 		}
 		
 		if(hide_in_win) hideFileInWindows(nuovo);
@@ -470,7 +477,7 @@ public final class FileUtility {
 			try {
 				return f.createNewFile();
 			} catch (IOException e) {
-				throw new ErrorePermessiFile();
+				throw new IllegalStateException("errore in scrittura o lettura");
 			}
 		}//lese
 	}//creaFileEParenti

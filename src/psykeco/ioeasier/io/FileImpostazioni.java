@@ -70,7 +70,7 @@ public class FileImpostazioni {
 	public boolean carica(){
 		if(!esiste()||caricato)return false;
 		
-		LinkedList<String> righe=FileUtility.fileUnlimSplitter(file, '\n');
+		List<String> righe=FileUtility.fileUnlimSplitter(file, '\n');
 		
 		//ogni riga sara' del tipo "nomeImpostazione valore"
 		
