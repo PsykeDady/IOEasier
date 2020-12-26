@@ -1,5 +1,7 @@
 package psykeco.ioeasier.io;
 
+import java.awt.Window;
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
@@ -8,8 +10,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,6 +48,7 @@ public final class FileUtility {
 	 * @param read, i file da leggere
 	 * @param separator, il carattere per cui vogliamo separare le parole
 	 * @param length, la lunghezza predefinita del vettore
+	 * @param charset : charset con cui leggere il file
 	 * 
 	 * @return il vettore di stringhe da ritornare
 	 * 
@@ -55,7 +61,7 @@ public final class FileUtility {
 	 *  
 	 * @throws EccezioneScrittura. possibile errore di accesso
 	 */
-	public static String[] fileSplitter(File read ,char separator, int length) {
+	public static String[] fileSplitter(File read ,char separator, int length, Charset charset) {
 		if(read==null||! read.exists()) return null;
 		
 		boolean hide_in_windows=nascostoInWindows(read);
@@ -69,13 +75,15 @@ public final class FileUtility {
 		
 		
 		try{
-			DataInputStream datainput= new DataInputStream(new FileInputStream(read));
+			FileInputStream fis = new FileInputStream(read);
+			InputStreamReader isr = new InputStreamReader(fis, charset);
+			BufferedReader reader = new BufferedReader(isr);
 			//inizio il salvataggio
 			
 			int c=0;
-			int size = datainput.available();
-			for(int i=0; i<size;i+=2){
-				char lettera=datainput.readChar();
+			char lettera=' ';
+			for(int tmp=reader.read(); tmp!=-1; tmp=reader.read()) {
+				lettera=(char)tmp;
 				if(lettera==separator){
 					scomposto[c++]=linea;//aggiungo la linea corrente all'array delle info
 					linea="";//azzero linea
@@ -90,14 +98,110 @@ public final class FileUtility {
 				scomposto[c]=linea;
 			}
 			//finita la lettura, chiudo il file
-			datainput.close();
+			reader.close();
+			isr.close();
+			fis.close();
 		} catch (FileNotFoundException e) {
 			throw new IllegalArgumentException("File non trovato "+read.getAbsolutePath());
+		} catch(EOFException e){
+			throw new IllegalArgumentException("Il file non conteneva le informazioni aspettate");
+		}
+		catch (IOException ecc) {
+			throw new IllegalStateException("Problemi in scrittura");
+		}//try-catch
+		
+		if(hide_in_windows) hideFileInWindows(read);
+		
+		return scomposto;
+	}//fileSplitter
+	
+	
+	/**
+	 * Questo metodo prende il file {@code read} in lettura, lo legge per caratteri,
+	 * e lo suddivide in piu' stringhe separate dal parametro {@code separator}
+	 * in ingresso. Il vettore di stringhe creato deve avere una dimensione 
+	 * predefinita, impostata con il parametro {@code length}.
+	 * 
+	 * Se qualcuno dei parametri inseriti non e' corretto, possono verificarsi
+	 * varie eccezioni 
+	 *  
+	 * @param read, i file da leggere
+	 * @param separator, il carattere per cui vogliamo separare le parole
+	 * @param length, la lunghezza predefinita del vettore
+	 * 
+	 * @return il vettore di stringhe da ritornare
+	 * 
+	 * @throws FileNonTrovato se non trova il file
+	 * 
+	 * @throws IndexOutOfBoundsException se il vettore era creato troppo piccolo in base alle 
+	 * 			informazioni contenute (il risultato non era aspettato quindi)
+	 * 
+	 * @throws IllegalArgumentException normalmente non verificabile
+	 *  
+	 * @throws EccezioneScrittura. possibile errore di accesso
+	 */
+	public static String[] fileSplitter(File read ,char separator, int length) {
+		return fileSplitter(read, separator, length, getCharsetOS());
+	}
+	
+	/**
+	 * fineUnlimSplitter  prende il file {@code read} in lettura, lo legge per caratteri,
+	 * e lo suddivide in piu' stringhe separate dal parametro {@code separator}
+	 * in ingresso. Non ha limiti di lunghezza, legge fino a quando non incontra 
+	 * il carattere di fine file
+	 * 
+	 * Se qualcuno dei parametri inseriti non e' corretto, possono verificarsi
+	 * varie eccezioni
+	 *  
+	 * @param read, i file da leggere
+	 *
+	 * @param separator cio' che delimita una Stringa
+	 * 
+	 * @param charset : charset con cui leggere il file
+	 * 
+	 * @return La lista di Stringhe divise
+	 */
+	public static List<String> fileUnlimSplitter(File read ,char separator, Charset charset) {
+		String linea="";
+		List<String> scomposto=new LinkedList<String>();
+		
+		boolean hide_in_windows=nascostoInWindows(read);
+		
+		if(hide_in_windows) showFileInWindows(read);
+		try{
+			
+			FileInputStream fis = new FileInputStream(read);
+			InputStreamReader isr = new InputStreamReader(fis, charset);
+			BufferedReader reader = new BufferedReader(isr);
+			
+			//inizio il salvataggio
+			
+			char lettera=' ';
+			for(int tmp=reader.read(); tmp!=-1; tmp=reader.read()) {
+				lettera=(char)tmp;
+				if(lettera==separator){
+					scomposto.add(linea);//aggiungo la linea corrente all'array delle info
+					linea="";//azzero linea
+					
+				}//if fine linea
+				else {
+					linea=linea+lettera;
+				}//fine else di composizione linea
+			}//fine for lettura
+			if (lettera!=separator){
+				scomposto.add(linea);
+			}
+			//finita la lettura, chiudo il file
+			reader.close();
+			isr.close();
+			fis.close();
+		} catch (FileNotFoundException e) {
+			throw new IllegalArgumentException("File non trovato:"+read.getAbsolutePath());
 		} catch (IndexOutOfBoundsException i){
 			throw new IndexOutOfBoundsException("Il parametro length non e' giusto\n"
 					+ "Il vettore deve essere creato + grande!");
 		}catch(EOFException e){
-			throw new IllegalArgumentException("Il file non conteneva le informazioni aspettate");
+			return scomposto;
 		}
 		catch (IOException ecc) {
 			throw new IllegalStateException("Problemi in scrittura");
@@ -120,52 +224,14 @@ public final class FileUtility {
 	 * @param read, i file da leggere
 	 *
 	 * @param separator cio' che delimita una Stringa
+	 * 
 	 * @return La lista di Stringhe divise
 	 */
 	public static List<String> fileUnlimSplitter(File read ,char separator) {
-		String linea="";
-		List<String> scomposto=new LinkedList<String>();
-		
-		boolean hide_in_windows=nascostoInWindows(read);
-		
-		if(hide_in_windows) showFileInWindows(read);
-		try{
-			DataInputStream datainput= new DataInputStream(new FileInputStream(read));
-			//inizio il salvataggio
-			int size=datainput.available();
-			char lettera=' ';
-			for(int i=0; i<size;i+=2){
-				lettera=datainput.readChar();
-				if(lettera==separator){
-					scomposto.add(linea);//aggiungo la linea corrente all'array delle info
-					linea="";//azzero linea
-					
-				}//if fine linea
-				else {
-					linea=linea+lettera;
-				}//fine else di composizione linea
-			}//fine for lettura
-			if (lettera!=separator){
-				scomposto.add(linea);
-			}
-			//finita la lettura, chiudo il file
-			datainput.close();
-		} catch (FileNotFoundException e) {
-			throw new IllegalArgumentException("File non trovato:"+read.getAbsolutePath());
-		} catch (IndexOutOfBoundsException i){
-			throw new IndexOutOfBoundsException("Il parametro length non e' giusto\n"
-					+ "Il vettore deve essere creato + grande!");
-		}catch(EOFException e){
-			return scomposto;
-		}
-		catch (IOException ecc) {
-			throw new IllegalStateException("Problemi in scrittura");
-		}//try-catch
-		
-		if(hide_in_windows) hideFileInWindows(read);
-		
-		return scomposto;
-	}//fileSplitter
+		return fileUnlimSplitter(read, separator, getCharsetOS());
+	}
+	
+
 	
 	/**
 	 * scrittore di file, prende il file che si chiama "path" (dove path e' l'intero path del file), se non esiste lo 
@@ -248,7 +314,7 @@ public final class FileUtility {
 		
 		
 		
-		if(selectOS().contains("win")){
+		if(selectOS()==SistemaOperativo.WINDOWS){
 			hideFileInWindows(f);
 			
 		}else{
@@ -279,7 +345,7 @@ public final class FileUtility {
 		
 		if(! f.isHidden())return true;
 		
-		if(selectOS().contains("win")){
+		if(selectOS()==SistemaOperativo.WINDOWS){
 			showFileInWindows(f);
 			
 		}else{
@@ -302,7 +368,7 @@ public final class FileUtility {
 	public static File hiddenFileName(File f){
 		if(f.isHidden())return f;
 		
-		if(selectOS().contains("win"))return f;
+		if(selectOS()==SistemaOperativo.WINDOWS)return f;
 		
 		return new File(f.getParentFile().getAbsolutePath()+
 				File.separatorChar+'.'+f.getName());
@@ -365,7 +431,7 @@ public final class FileUtility {
 	public static File showFileName(File f){
 		if(!f.isHidden())return f;
 		
-		if(selectOS().contains("win"))return f;
+		if(selectOS()==SistemaOperativo.WINDOWS)return f;
 		
 		String nome=f.getName();
 		
@@ -383,13 +449,16 @@ public final class FileUtility {
 	}
 	
 	/**
-	 * @return il sistema operativo corrente in string 
+	 * @return il sistema operativo corrente in {@link SistemaOperativo} 
 	 */
-	public static String selectOS(){
+	public static SistemaOperativo selectOS(){
 		String os_name=System.getProperty("os.name").toLowerCase();
 		
-		
-		return os_name;
+		if (os_name.contains("win")) return SistemaOperativo.WINDOWS;
+		else if (os_name.contains("nux")) return SistemaOperativo.LINUX;
+		else if (os_name.contains("mac")) return SistemaOperativo.MAC;
+		else if (os_name.contains("nix")) return SistemaOperativo.UNIX_GENERICO;
+		else return SistemaOperativo.UNIX_GENERICO;
 	}
 	
 	
@@ -487,7 +556,7 @@ public final class FileUtility {
 	 * @return notifica se il file e nascosto sotto il sistema operativo windows, 
 	 * 			questo stato puo generare errori di scrittura quindi e bene controllarlo
 	 */
-	public static boolean nascostoInWindows(File f){ return selectOS().contains("win")&&f.isHidden();}
+	public static boolean nascostoInWindows(File f){ return selectOS()==SistemaOperativo.WINDOWS&&f.isHidden();}
 	
 	/**
 	 * questo metodo nasconde un file sotto sistema operativo windows
@@ -497,7 +566,7 @@ public final class FileUtility {
 				f==null
 				||!f.exists()
 				||f.isHidden()
-				||! selectOS().contains("win") 
+				||!(selectOS()==SistemaOperativo.WINDOWS) 
 		) return;
 		
 		try{
@@ -519,7 +588,7 @@ public final class FileUtility {
 				f==null
 				||!f.exists()
 				||!f.isHidden()
-				||!selectOS().contains("win") 
+				||!(selectOS()==SistemaOperativo.WINDOWS)
 		) return;
 		
 		try{
@@ -572,6 +641,21 @@ public final class FileUtility {
 		File x =getExecJar(c);
 		
 		return (x==null)?"":x.getName();
+	}
+	
+	/**
+	 * ritorna il giusto charset in base all'os 
+	 * @return UTF-8 su Unix, CP1252 su Windows
+	 */
+	public static Charset getCharsetOS() {
+		SistemaOperativo os=selectOS();
+		
+		if (os==SistemaOperativo.WINDOWS) {
+			return StandardCharsets.ISO_8859_1;
+		}
+		
+		return StandardCharsets.UTF_8;
+		
 	}
 	
 }//FileUtility

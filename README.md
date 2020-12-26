@@ -1,7 +1,7 @@
 # IOEasier
 Rendi più facile gestire l'IO con java!
 
-`version 0.1`
+`version 0.2`
 
 
 ## Usare le classi DB
@@ -70,7 +70,7 @@ FileUtility è una **classe statica** che contiene una serie di metodi per regol
 | `hiddenFileName(File originale)`                             | `File`         | Restituisce un file con il nome che avrebbe se fosse nascosto ( nei sistemi UNIX con un `.` davanti) |
 | `showFileName(File)`                                         | `File`         | Restituisce un file con il nome che avrebbe se non fosse nascosto ( nei sistemi UNIX senza  `.` davanti) |
 | `deleteFile(File, String argomenti)`                         | `boolean`      | Elimina un file, si possono passare argomenti (vedi [argomenti deleteFile](###argomenti-deleteFile) ) |
-| `selectOS()`                                                 | `String`       | restituisce il nome del sistema operativo                    |
+| `selectOS()`                                                 | `SistemaOperativo`       | restituisce il [Sistema Operativo](###la-enum-SistemaOperativo)                   |
 | `listFile(File directory)`                                   | `String[]`     | restituisce un vettore di String di file presenti nella cartella |
 | `listVisibleFile(File directory)`                            | `String[]`     | restituisce un vettore di String di file presenti nella cartella ( ma non quelli nascosti ) |
 | `textFileWriter(String, LinkedList<String>, String)`         | `void`         | Scrive la lista di stringhe sul file indicato da "nomefile" separando ogni stringa dall'altra con il separatore |

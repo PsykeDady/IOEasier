@@ -39,7 +39,7 @@ public class DebugPrint {
 			PrintStream ps=new PrintStream(s);
 			constructor(ps);
 		}catch(IOException io) {
-			System.err.println("non e' stato possibile attivare la modalità debug!");
+			System.err.println("non e' stato possibile attivare la modalit\u00e0 debug!");
 			System.exit(-1);
 		}
 	}
