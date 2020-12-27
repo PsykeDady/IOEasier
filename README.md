@@ -54,7 +54,7 @@ Sono inoltre disponibili i seguenti metodi/variabili statiche :
 
 - `str(Object o):String`  :  restituisce la rappresentazione stringa dell'oggetto che verrà messa nel DB
   - nel caso delle stringhe ad esempio verranno aggiunti apici singoli `'`
-- ``BASE_REGEX : String` : è una variabile che rappresenta la regex che viene applicata ai singoli elementi che son imposti come nome colonna, nome db o nome tabella
+- `BASE_REGEX : String` : è una variabile che rappresenta la regex che viene applicata ai singoli elementi che son imposti come nome colonna, nome db o nome tabella
 - `VALUE_REGEX: STRING` : è una variabile che rappresenta la regex che viene applicata ai singoli elementi che  rappresenteranno i valori nelle query
 
 
