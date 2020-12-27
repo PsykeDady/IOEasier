@@ -14,7 +14,7 @@ public interface QueryCraft {
 	public static String BASE_REGEX="[A-Za-z](([A-Za-z0-9_-]| )*[A-Za-z0-9])?";
 	
 	/** Regex per validare i singoli valori delle query */
-	public static String VALUE_REGEX="([A-Za-z0-9_-]| )+";
+	public static String VALUE_REGEX="([A-Za-z0-9_-]| )*";
 	
 	/**
 	 * ritorna una versione "stringa" dell'oggetto da usare nelle query.

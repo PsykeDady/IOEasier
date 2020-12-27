@@ -1,7 +1,7 @@
 # IOEasier
 Rendi più facile gestire l'IO con java!
 
-`version 0.3`
+`version 0.4`
 
 
 ## Usare le classi DB
@@ -39,10 +39,10 @@ Le istanze di `QueryCraft` sono builder che creano delle query a partire da copp
 
 L'interfaccia espone i metodi:
 
-| **Nome metodo**                                  | **Descrizione**                                              |
-| ------------------------------------------------ | ------------------------------------------------------------ |
-| `DB(String) : QueryCraft`                          | imposta il nome del DB                                       |
-| `table(String) : QueryCraft`                       | imposta il nome della tabella                                |
+| **Nome metodo**                                    | **Descrizione**  *(***obbligatorio)*                         |
+| -------------------------------------------------- | ------------------------------------------------------------ |
+| `DB(String) : QueryCraft`                          | imposta il nome del DB*                                      |
+| `table(String) : QueryCraft`                       | imposta il nome della tabella*                               |
 | `entry(String column, String value) : QueryCraft`  | imposta una coppia colonna-valore all'operatore principale (select, update, insert, etc...) |
 | `filter(String column, String value) : QueryCraft` | imposta una coppia colonna-valore alla where                 |
 | `validate() : boolean`                             | valida la query, se false qualche parametro necessario non è stato impostato, oppure qualche valore non ha passato la regex |
@@ -65,7 +65,7 @@ Al momento son presenti le seguenti implementazioni di QueryCraft:
 
 
 
-### exception 
+### exception
 
 | Eccezione                       | messaggio                                                 | quando                                                       |
 | ------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------ |
@@ -77,7 +77,25 @@ Al momento son presenti le seguenti implementazioni di QueryCraft:
 
 
 
+## TableCraft 
 
+La `TableCraft` crea le istruzioni per generare tabelle a partire dalle classi java. Per farlo usa la **reflection**.
+
+Espone i seguenti metodi:
+
+| **Nome metodo**                | **Descrizione** *(***obbligatorio)*                          |
+| ------------------------------ | ------------------------------------------------------------ |
+| `DB(String) : TableCraft`      | imposta il nome del DB *                                     |
+| `table(Class) : TableCraft`    | imposta il nome della tabella *                              |
+| `suffix(String) : TableCraft`  | imposta un suffisso                                          |
+| `prefix(String) : TableCraft`  | imposta un prefisso                                          |
+| `primary(String) : TableCraft` | aggiunge una chiave primaria                                 |
+| `validate() : boolean`         | valida la query, se false qualche parametro necessario non è stato impostato, oppure qualche valore non ha passato la regex |
+| `craft() : String`             | costruisce la query sotto forma di stringa                   |
+
+
+
+L'unica implementazione disponibile è quella di `SQLCreateTableCraft`
 
 ## Input da Console
 
@@ -138,3 +156,13 @@ Contiene i valori:
 - `MAC`
 - `UNIX_GENERICO`
 - `OTHER`
+
+
+# TODO 
+- QueryCraft : documentazione
+- QueryCraft : join e filterJ (filter on join) 
+- QueryCraft : gestire Date e GregorianCalendar
+- QueryCraft : UNIT TEST
+- MySqlConnection : Generare valore di ritorno
+- MySqlConnection : gestire Messaggi di Errore
+- MySqlConnection : UNIT TEST 

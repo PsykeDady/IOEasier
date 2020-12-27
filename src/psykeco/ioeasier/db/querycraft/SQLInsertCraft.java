@@ -7,7 +7,7 @@ import java.util.Map.Entry;
  * Costruisce la insert per le query di tipo SQL<br>
  * implementa {@link QueryCraft}
  * 
- * @author archdady
+ * @author psykedady
  *
  */
 public class SQLInsertCraft implements QueryCraft {
@@ -22,24 +22,24 @@ public class SQLInsertCraft implements QueryCraft {
 	
 	
 	@Override
-	public QueryCraft DB(String DB) {
+	public SQLInsertCraft DB(String DB) {
 		this.db=DB;
 		return this;
 	}
 	
 	@Override
-	public QueryCraft table(String table) {
+	public SQLInsertCraft table(String table) {
 		this.table=table;
 		return this;
 	}
 
 	@Override
-	public QueryCraft entry(Entry<String, Object> kv) {
+	public SQLInsertCraft entry(Entry<String, Object> kv) {
 		return entry(kv.getKey(),kv.getValue());
 	}
 	
 	@Override
-	public QueryCraft entry(String colonna, Object valore) {
+	public SQLInsertCraft entry(String colonna, Object valore) {
 		this.kv.putIfAbsent(colonna, valore);
 		return this;
 	}

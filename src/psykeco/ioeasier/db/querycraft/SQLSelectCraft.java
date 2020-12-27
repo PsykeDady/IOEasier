@@ -14,13 +14,13 @@ public class SQLSelectCraft implements QueryCraft {
 	
 	
 	@Override
-	public QueryCraft DB(String DB) {
+	public SQLSelectCraft DB(String DB) {
 		this.db=DB;
 		return this;
 	}
 	
 	@Override
-	public QueryCraft table(String table) {
+	public SQLSelectCraft table(String table) {
 		this.table=table;
 		return this;
 	}
@@ -33,7 +33,7 @@ public class SQLSelectCraft implements QueryCraft {
 	 * 
 	 * @return un istanza di SQLSelectCraft con il campo aggiunto alla select
 	 * */
-	public QueryCraft entry(String colonna) {
+	public SQLSelectCraft entry(String colonna) {
 		this.kv.add(colonna);
 		return this;
 	}
@@ -48,7 +48,7 @@ public class SQLSelectCraft implements QueryCraft {
 	 * @return un istanza di SQLSelectCraft con il campo aggiunto alla select
 	 * */
 	@Override
-	public QueryCraft entry(String colonna, Object valore) {
+	public SQLSelectCraft entry(String colonna, Object valore) {
 		return entry(colonna);
 	}
 	
@@ -61,18 +61,18 @@ public class SQLSelectCraft implements QueryCraft {
 	 * @return un istanza di SQLSelectCraft con il campo aggiunto alla select
 	 * */
 	@Override
-	public QueryCraft entry(Entry<String, Object> kv) {
+	public SQLSelectCraft entry(Entry<String, Object> kv) {
 		return entry(kv.getKey());
 	}
 
 	
 	@Override
-	public QueryCraft filter(Entry<String, Object> filter) {
+	public SQLSelectCraft filter(Entry<String, Object> filter) {
 		return entry(filter.getKey(),filter.getValue());
 	}
 	
 	@Override
-	public QueryCraft filter(String colonna, Object valore) {
+	public SQLSelectCraft filter(String colonna, Object valore) {
 		this.filter.putIfAbsent(colonna, valore);
 		return this;
 	}

@@ -9,36 +9,36 @@ public class SQLDeleteCraft implements QueryCraft{
 	private HashMap<String,Object> filter=new HashMap<>();
 	
 	@Override
-	public QueryCraft DB(String DB) {
+	public SQLDeleteCraft DB(String DB) {
 		this.db=DB;
 		return this;
 	}
 	
 	@Override
-	public QueryCraft table(String table) {
+	public SQLDeleteCraft table(String table) {
 		this.table=table;
 		return this;
 	}
 	
 	
 	@Override
-	public QueryCraft entry(Entry<String, Object> kv) {
+	public SQLDeleteCraft entry(Entry<String, Object> kv) {
 		throw new UnsupportedOperationException("SqlDeleteCraft does not support entry");
 	}
 	
 	@Override
-	public QueryCraft entry(String colonna, Object valore) {
+	public SQLDeleteCraft entry(String colonna, Object valore) {
 		throw new UnsupportedOperationException("SqlDeleteCraft does not support entry");
 	}
 
 	
 	@Override
-	public QueryCraft filter(Entry<String, Object> filter) {
+	public SQLDeleteCraft filter(Entry<String, Object> filter) {
 		return entry(filter.getKey(),filter.getValue());
 	}
 	
 	@Override
-	public QueryCraft filter(String colonna, Object valore) {
+	public SQLDeleteCraft filter(String colonna, Object valore) {
 		this.filter.putIfAbsent(colonna, valore);
 		return this;
 	}

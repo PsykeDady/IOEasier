@@ -12,37 +12,37 @@ public class SQLUpdateCraft implements QueryCraft {
 	
 	
 	@Override
-	public QueryCraft DB(String DB) {
+	public SQLUpdateCraft DB(String DB) {
 		this.db=DB;
 		return this;
 	}
 	
 	@Override
-	public QueryCraft table(String table) {
+	public SQLUpdateCraft table(String table) {
 		this.table=table;
 		return this;
 	}
 	
 	
 	@Override
-	public QueryCraft entry(Entry<String, Object> kv) {
+	public SQLUpdateCraft entry(Entry<String, Object> kv) {
 		return entry(kv.getKey(),kv.getValue());
 	}
 	
 	@Override
-	public QueryCraft entry(String colonna, Object valore) {
+	public SQLUpdateCraft entry(String colonna, Object valore) {
 		this.kv.putIfAbsent(colonna, valore);
 		return this;
 	}
 
 	
 	@Override
-	public QueryCraft filter(Entry<String, Object> filter) {
+	public SQLUpdateCraft filter(Entry<String, Object> filter) {
 		return entry(filter.getKey(),filter.getValue());
 	}
 	
 	@Override
-	public QueryCraft filter(String colonna, Object valore) {
+	public SQLUpdateCraft filter(String colonna, Object valore) {
 		this.filter.putIfAbsent(colonna, valore);
 		return this;
 	}
