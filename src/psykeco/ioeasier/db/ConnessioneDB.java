@@ -20,7 +20,7 @@ public class ConnessioneDB {
 	/**
 	 * nome standard dei driver jdbc usati
 	 */
-	public static final String DRIVER="com.mysql.cj.jdbc.Driver";
+	public static final String DRIVER="com.mysql.jdbc.Driver";
 	
 	/**
 	 * semi-URL standard della connessione con jdbc. Va completato con il nome del database
@@ -76,12 +76,12 @@ public class ConnessioneDB {
 	public static Connection connect(String ... credenziali){
 		Connection connessione=null;
 		try{
-			Class.forName(DRIVER);
+			//Class.forName(DRIVER);
 			connessione=DriverManager.getConnection(URL,credenziali[0],credenziali[1]);
-		}catch(ClassNotFoundException c ){
+		}/*catch(ClassNotFoundException c ){
 			throw new IllegalStateException("Driver Mancanti");
-		}catch(SQLException s){
-			throw new IllegalStateException();
+		}*/catch(SQLException s){
+			throw new IllegalStateException(s.getMessage());
 		}
 		return connessione;
 	}
