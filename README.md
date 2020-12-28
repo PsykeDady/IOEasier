@@ -159,9 +159,9 @@ Contiene i valori:
 
 
 # TODO 
-- QueryCraft : documentazione
 - QueryCraft : join e filterJ (filter on join) 
 - QueryCraft : gestire Date e GregorianCalendar
+- QueryCraft : gestione File
 - QueryCraft : UNIT TEST
 - MySqlConnection : Generare valore di ritorno
 - MySqlConnection : gestire Messaggi di Errore
