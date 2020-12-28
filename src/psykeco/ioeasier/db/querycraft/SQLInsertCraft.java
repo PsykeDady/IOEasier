@@ -77,7 +77,7 @@ public class SQLInsertCraft implements QueryCraft {
 		String validation=validate();
 		if( ! validation.equals("") ) throw new IllegalArgumentException(validation);
 		
-		values.append(INIT+'`'+db+"`."+table+'`'+" ( ");
+		values.append(INIT+'`'+db+"`.`"+table+'`'+" ( ");
 		column.append(" values (");
 		
 		for (Entry<String,Object> kv : this.kv.entrySet()) {
