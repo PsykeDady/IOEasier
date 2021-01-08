@@ -47,6 +47,7 @@ public final class FileUtility {
 	 *  
 	 * @param read, i file da leggere
 	 * @param separator, il carattere per cui vogliamo separare le parole
+	 * @param index, numero di separatori da saltare prima di leggere
 	 * @param length, la lunghezza predefinita del vettore
 	 * @param charset : charset con cui leggere il file
 	 * 
@@ -61,7 +62,7 @@ public final class FileUtility {
 	 *  
 	 * @throws EccezioneScrittura. possibile errore di accesso
 	 */
-	public static String[] fileSplitter(File read ,char separator, int length, Charset charset) {
+	public static String[] fileSplitter(File read ,char separator, int index, int length, Charset charset) {
 		if(read==null||! read.exists()) return null;
 		
 		boolean hide_in_windows=nascostoInWindows(read);
@@ -82,9 +83,10 @@ public final class FileUtility {
 			
 			int c=0;
 			char lettera=' ';
-			for(int tmp=reader.read(); tmp!=-1; tmp=reader.read()) {
+			for(int tmp=reader.read(); tmp!=-1&& c<length; tmp=reader.read()) {
 				lettera=(char)tmp;
 				if(lettera==separator){
+					if(index-->0) {linea="";continue;}
 					scomposto[c++]=linea;//aggiungo la linea corrente all'array delle info
 					linea="";//azzero linea
 					
@@ -94,7 +96,7 @@ public final class FileUtility {
 					linea=linea+lettera;
 				}//fine else di composizione linea
 			}//fine for lettura
-			if(linea!= null){
+			if(linea!= null && c <length){
 				scomposto[c]=linea;
 			}
 			//finita la lettura, chiudo il file
@@ -115,6 +117,34 @@ public final class FileUtility {
 		return scomposto;
 	}//fileSplitter
 	
+	/**
+	 * Questo metodo prende il file {@code read} in lettura, lo legge per caratteri,
+	 * e lo suddivide in piu' stringhe separate dal parametro {@code separator}
+	 * in ingresso. Il vettore di stringhe creato deve avere una dimensione 
+	 * predefinita, impostata con il parametro {@code length}.
+	 * 
+	 * Se qualcuno dei parametri inseriti non e' corretto, possono verificarsi
+	 * varie eccezioni 
+	 *  
+	 * @param read, i file da leggere
+	 * @param separator, il carattere per cui vogliamo separare le parole
+	 * @param length, la lunghezza predefinita del vettore
+	 * @param charset : charset con cui leggere il file
+	 * 
+	 * @return il vettore di stringhe da ritornare
+	 * 
+	 * @throws FileNonTrovato se non trova il file
+	 * 
+	 * @throws IndexOutOfBoundsException se il vettore era creato troppo piccolo in base alle 
+	 * 			informazioni contenute (il risultato non era aspettato quindi)
+	 * 
+	 * @throws IllegalArgumentException normalmente non verificabile
+	 *  
+	 * @throws EccezioneScrittura. possibile errore di accesso
+	 */
+	public static String[] fileSplitter(File read ,char separator, int length, Charset charset) {
+		return fileSplitter(read,separator,0,length,charset);
+	}
 	
 	/**
 	 * Questo metodo prende il file {@code read} in lettura, lo legge per caratteri,

@@ -35,8 +35,18 @@ public class DebugPrint {
 	}
 	
 	public DebugPrint(String s) {
+		this(s,false);
+	}
+	
+	public DebugPrint(String s, boolean append) {
 		try {
+			java.util.List<String> l=new java.util.LinkedList<>();
+			java.io.File f=new java.io.File(s); 
+			if(f.canRead() && append)
+				l=FileUtility.fileUnlimSplitter(f, '\n');
 			PrintStream ps=new PrintStream(s);
+			if(append)
+				for (String linea:l) ps.append(linea+'\n');
 			constructor(ps);
 		}catch(IOException io) {
 			System.err.println("non e' stato possibile attivare la modalit\u00e0 debug!");
@@ -61,7 +71,7 @@ public class DebugPrint {
 		
 		if(close)return;
 		
-		if (debug_mode){
+		if (canPrint()){
 			out.close();
 			close=true;
 		}
