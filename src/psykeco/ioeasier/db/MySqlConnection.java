@@ -29,26 +29,15 @@ public class MySqlConnection {
 	 */
 	private Connection connessione;
 	
-	/**
-	 * variabile che indica se si vogliono indietro i messaggi di errore 
-	 */
-	private static boolean debug=false;
-
-	
+	/** codice restituito in caso di query riuscita */
+	public final int CODICE_OK= 0;	
+	/** codice restituito in caso di query non riuscita */
+	public final int CODICE_KO=-1;
 	
 	public MySqlConnection(){
 		connessione=ConnessioneDB.getConnect();
 		connesso=connessione!=null;
 	}//MySqlConnection()
-	
-	
-	/**
-	 * inserendo true in questo metodo si dichiara di voler indietro
-	 * i messaggi di errore gestiti automaticamente dal programma
-	 * @param debug_on
-	 */
-	public static void setDebugMode(boolean debug_on){debug=debug_on;}
-		
 	
 	/**
 	 * @return true se connesso
@@ -57,22 +46,23 @@ public class MySqlConnection {
 		return connesso;
 	}
 	
-	/**
-	 *  @return lo stato del debug
+	/**preleva la connessione per fare query 
+	 * 
+	 * @return la connessione
 	 */
-	public boolean statoDebug(){
-		return debug;
+	public Connection getConnection(){
+		return connessione;
 	}
-
-
 	
+	/**
+	 * Chiusura della connessione
+	 */
 	public void chiusura(){
 		if(!connesso) return;
 		try{
 			connessione.close();
 			connesso=!connesso;
 		}catch(SQLException s){
-			//richiestarifiutata TODO
 		}
 	}//chiusura
 	
@@ -94,8 +84,6 @@ public class MySqlConnection {
 			connessione.createStatement().execute(query);
 			return true;
 		} catch (SQLException e) {
-			if(debug)e.printStackTrace();
-			// richiesta rifiutata TODO
 			return false;
 		}
 		
@@ -116,11 +104,8 @@ public class MySqlConnection {
 			ResultSet rs=connessione.createStatement().executeQuery(query);
 			return rs.next();
 		} catch (SQLException e) {
-			if(debug)e.printStackTrace();
 			return false;
-			// richiesta rifiutata TODO
 		}//try-catch
-		
 	}//existDB
 	
 	/**
@@ -138,21 +123,9 @@ public class MySqlConnection {
 			connessione.createStatement().execute(query);
 			return true;
 		}catch(SQLException s){
-			if(debug)s.printStackTrace();
 			return false;
 		}//try-catch
-		
-		
 	}//dropDB
-	
-
-	/**preleva la connessione per fare query 
-	 * 
-	 * @return la connessione
-	 */
-	public Connection getConnection(){
-		return connessione;
-	}
 	
 	/**
 	 *esegue un comando mysql e restituisce true se e' stato eseguito correttamente.<BR>
@@ -169,13 +142,12 @@ public class MySqlConnection {
 			connessione.createStatement().execute(comando);
 			return true;
 		}catch(SQLException s){
-			if(debug)s.printStackTrace();
 			return false;
 		}//try-catch
 	}//esegui
 	
 	/**
-	 * esegue una query e ritorna il ResultSet associato.<BR>
+	 * esegue una query e ritorna il ResultSet associato.<br>
 	 * Se avviene un errore, o il db non e' connesso allora il valore
 	 * ritornato e' null.
 	 * 
@@ -189,7 +161,6 @@ public class MySqlConnection {
 		try{
 			return  connessione.createStatement().executeQuery(query);
 		}catch(SQLException s){
-			if(debug)s.printStackTrace();
 			return null;
 		}//try-catch
 	}//query
@@ -198,7 +169,6 @@ public class MySqlConnection {
 	/**
 	 * restituisce una lista di database creati con l'account e la password
 	 * ricevuti
-	 * @param credenziali : vettore di credenziali, dove credenziali[0]:nome mysql, credenziali[1]:password
 	 * @return una lista di database
 	 */
 	public LinkedList<String> listDB (){
@@ -210,21 +180,10 @@ public class MySqlConnection {
 			while(rs.next()){
 				ret.add(rs.getString(1).trim());
 			}//while
-		
 		}catch(SQLException s){
-			//return null;
-			s.printStackTrace();
-			throw new IllegalStateException("Errore di connessione");
+			return null;
 		}//catch
 		return ret;
-		
 	}//listDB
 	
-
-	
-	
-	
-	
-	
-
 }//classe MySqlConnection

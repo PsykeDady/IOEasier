@@ -4,4 +4,4 @@ bin/
 .classpath
 .project
 .settings/
-/bin1/
+bin_test/
