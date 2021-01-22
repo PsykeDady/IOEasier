@@ -1,5 +1,0 @@
-classDiagram
-	QueryCraft <-- SQLInsertCraft
-	QueryCraft <-- SQLSelectCraft
-	QueryCraft <-- SQLUpdateCraft
-	QueryCraft <-- SQLDeleteCraft
