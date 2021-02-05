@@ -63,3 +63,9 @@ Contiene i valori:
 - `MAC`
 - `UNIX_GENERICO`
 - `OTHER`
+
+
+# TODO 
+- error translate per i messaggi di errore (come in querycraft) 
+- auto flush nel debugprint
+- in debug print, insert class name and method name 
